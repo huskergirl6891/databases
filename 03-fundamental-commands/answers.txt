@@ -16,22 +16,52 @@ needs to have first and last name, whether they sent in their RSVP, the number o
 and the number of meals (1 for adults and 1/2 for children).
 
 - Which data type would you use to store each of the following pieces of information?
-  - First and last name.
-  - Whether they sent in their RSVP.
-  - Number of guests.
-  - Number of meals.
+  - First and last name: text
+  - Whether they sent in their RSVP: boolean
+  - Number of guests: integer
+  - Number of meals: numeric
 - Write a command that makes the table to track the wedding.
+CREATE TABLE wedding (
+      id integer,
+      first_name text,
+      last_name text,
+      rsvp boolean,
+      guests int
+      meals numeric(5, 1)
+  );
+
 - Using the table we just created, write a command that adds a column to track whether they were sent a thank you card.
+ALTER TABLE wedding ADD COLUMN thank_you boolean;
+
 - You have decided to move the data about the meals to another table, so write a command to remove the column storing
 the number meals from the wedding table.
+ALTER TABLE wedding DROP COLUMN meals;
+
 - The guests are going to need a place to sit at the reception, so write a statement that adds a column for table number.
+ALTER TABLE wedding ADD COLUMN table_number int;
+
 - The wedding is over and we do not need to keep this information, so write a command that deletes the wedding table from the database.
+DROP TABLE wedding;
 
 5. Write a command to make a new table to hold the books in a library with the columns ISBN, title, author, genre, publishing date, number of copies, and available copies.
+CREATE TABLE library_books (
+      id integer,
+      isbn text,
+      title text,
+      author text,
+      genre text,
+      publishing_date data,
+      copies int,
+      available_copies int
+  );
 
 - Find three books and add their information to the table.
+
 - Say that someone has just checked out one of the books. Change the available copies column to 1 less.
+
+
 - Now one of the books has been added to the banned books list. Remove it from the table.
+
 
 6. Write a command to make a new table to hold spacecrafts. Information should include id, name, year launched, country of origin, a brief description of the mission, orbiting body, if it is currently operating, and approximate miles from Earth.
 

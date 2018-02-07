@@ -22,10 +22,10 @@ and the number of meals (1 for adults and 1/2 for children).
   - Number of meals: numeric
 - Write a command that makes the table to track the wedding.
 CREATE TABLE wedding (
-      id integer,
+      id int,
       first_name text,
       last_name text,
-      rsvp boolean,
+      rsvp bool,
       guests int
       meals numeric(5, 1)
   );
@@ -45,32 +45,77 @@ DROP TABLE wedding;
 
 5. Write a command to make a new table to hold the books in a library with the columns ISBN, title, author, genre, publishing date, number of copies, and available copies.
 CREATE TABLE library_books (
-      id integer,
+      id int,
       isbn text,
       title text,
       author text,
       genre text,
-      publishing_date data,
+      publishing_date date,
       copies int,
       available_copies int
   );
 
 - Find three books and add their information to the table.
+INSERT INTO library_books (id, isbn, title, author, genre, publishing_date, copies, available_copies)
+  VALUES
+  (001, '978-0439064873', 'Harry Potter And The Chamber Of Secrets', 'J. K. Rowling', 'Fantasy', August 15, 2000, 3, 3),
+  (002, '978-0062316097', 'Sapiens: A Brief History of Humankin', 'Yuval Noah Harari', 'History', February 10, 2015, 1, 1),
+  (003, '978-0385514231', 'Origin: A Novel', 'Dan Brown', 'Mystery', October 3, 2017, 2, 2);
 
 - Say that someone has just checked out one of the books. Change the available copies column to 1 less.
+UPDATE library_books SET available_copies = 2 WHERE id = 001;
 
 
 - Now one of the books has been added to the banned books list. Remove it from the table.
+DELETE FROM library_books WHERE id = 003
 
 
 6. Write a command to make a new table to hold spacecrafts. Information should include id, name, year launched, country of origin, a brief description of the mission, orbiting body, if it is currently operating, and approximate miles from Earth.
+CREATE TABLE spacecrafts (
+      id int,
+      name text,
+      year_launched date,
+      origin_country text,
+      description text,
+      orbiting_body text,
+      operating bool,
+      distance_from_earth_million_miles float
+  );
 
 - Add 3 non-Earth-orbiting satellites to the table.
+INSERT INTO spacecrafts (id, name, year_launched, origin_country, description, orbiting_body, operating, distance_from_earth)
+  VALUES
+  (001, 'Wombat', 2003, 'Russia', 'The best one ever', 'Jupiter', true, 600),
+  (002, 'Snow Leopard', 2009, 'USA', 'In honor of Steve', 'Saturn', true, 750),
+  (003, 'Rover', 2014, 'China', 'Faster and lighter', 'Mars', true, 40);
+
 - Remove one of the satellites from the table since it has just been crashed into the planet.
+DELETE FROM spacecrafts WHERE id = 002
+
 - Edit another satellite because it is no longer operating and change the value to reflect that.
+UPDATE spacecrafts SET operating = false WHERE id = 001
 
 7. Write a command to make a new table to hold the emails in your inbox. This table should include an id, the subject line, the sender, any additional recipients, the body of the email, the timestamp, whether or not it’s been read, and the id of the email chain it’s in.
+CREATE TABLE emails (
+  id int,
+  subject text,
+  sender text,
+  recipients text[],
+  body text,
+  timestamp timestamp,
+  read bool,
+  email_chain_id int
+);
 
 - Add 3 new emails to the inbox.
+INSERT INTO spacecrafts (id, subject, sender, recipients, body, timestamp, read, email_chain_id)
+  VALUES
+  (001, 'Hello', 'test@test.com', ['test2@test.com', 'test3@test.com'], 'This is a test.', Wed Dec 17 07:37:16 1997 PST, false, 020),
+  (002, 'Lunch tomorrow?', 'friend@friend.com', ['otherfriend@friend.com'], 'Pizza Hut?', Wed Dec 17 07:38:16 1997 PST, true, 030),
+  (003, 'Re: Lunch tomorrow?', 'otherfriend@friend.com', ['friend@friend.com'], 'Of course.', Wed Dec 17 07:39:16 1997 PST, true, 030);
+
 - You’ve just deleted one of the emails, so write a command to remove the row from the inbox table.
+DELETE FROM emails WHERE id = 001
+
 - You started reading an email but just heard a crash in another room. Mark the email as unread before investigating, so you can come back to it later.
+UPDATE emails SET read = false WHERE id = 002

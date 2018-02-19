@@ -1,0 +1,118 @@
+1.  List 5 aggregate functions and explain, in your own words, what they are for. Include a real world example for each.
+If you can’t list these from memory, do these flashcards until you can!
+SUM - adds together all items in the selection --> sum of sales from all stores in a quarter
+AVG - takes the average of items in the selection -->  average temperature on a given day over the last 10 years
+COUNT - counts the number of items in the selection --> number of people who are over 6 feet tall
+MIN - returns the minimum value of the selection --> find the youngest person in the class
+MAX - returns the maximum value of the selection --> find the city with the largest population
+
+2.  Create a database called iron-bank-foundation. Create a donations table, and import CSV data from this file. Select the following data from the table:
+
+-- Find the total of all donations received in the past year.
+SELECT SUM(amount) FROM donations;
+ sum
+-----
+ 993
+
+-- Find the total donations over time per donor. (i.e. Tanysha has donated 3 times with the amounts $25, $30, and $50. Her total is $105. )
+iron-bank-foundation=# SELECT SUM(amount) AS total_donations, donor FROM donations GROUP BY donor;
+ total_donations |   donor
+-----------------+------------
+              20 | Samwell
+              10 | Daario
+              75 | Brienne
+             120 | Tyrion
+              70 | Petyr
+              45 | Melisandre
+              25 | Bran
+              50 | Tormund
+              30 | Ygritte
+               7 | Gilly
+              25 | Jon
+              60 | Arya
+              20 | Theon
+              20 | Bronn
+             120 | Margaery
+              90 | Missandei
+              33 | Sansa
+             173 | Daenerys
+
+-- What is the average donation per donor?
+iron-bank-foundation=# SELECT AVG(amount) AS average_donation, donor FROM donations GROUP BY donor;
+   average_donation   |   donor
+----------------------+------------
+  20.0000000000000000 | Samwell
+  10.0000000000000000 | Daario
+  75.0000000000000000 | Brienne
+  40.0000000000000000 | Tyrion
+  70.0000000000000000 | Petyr
+  45.0000000000000000 | Melisandre
+  25.0000000000000000 | Bran
+  50.0000000000000000 | Tormund
+  30.0000000000000000 | Ygritte
+   7.0000000000000000 | Gilly
+  25.0000000000000000 | Jon
+  20.0000000000000000 | Arya
+  10.0000000000000000 | Theon
+  20.0000000000000000 | Bronn
+ 120.0000000000000000 | Margaery
+  22.5000000000000000 | Missandei
+  33.0000000000000000 | Sansa
+  86.5000000000000000 | Daenerys
+
+-- How many donations over $100 have been received?
+iron-bank-foundation=# SELECT COUNT(donor) FROM donations WHERE amount > 100;
+ count
+-------
+     2
+
+-- What is the largest donation received in a single instance from a single donor?
+iron-bank-foundation=# SELECT MAX(amount) FROM donations;
+ max
+-----
+ 120
+
+-- What is the smallest donation we’ve received?
+iron-bank-foundation=# SELECT MIN(amount) FROM donations;
+ min
+-----
+   5
+
+3.  How would you determine the display order of data returned by your SELECT statement?
+Using ORDER BY determines the order of data.  ORDER BY default is to sort in ascending order.
+There is also an option to sort in descending order (DESC).
+
+4.  What is a real world situation where you would use OFFSET?
+To find the runner-ups in a competition (i.e. people who did not get 1st place).
+
+5.  Why is it important to use ORDER BY when limiting your results?
+Using LIMIT without ORDER BY will just return the results limited by the number specified potentially
+without any meaning, since it will limit to the number of rows as they exist in the database.
+
+6.  What is the difference between HAVING and WHERE?
+HAVING is used after a grouping is applied (i.e. the condition is applied to the groupings) vs WHERE is
+used on individual items before grouping.
+
+7. Correct the following SELECT statement:
+
+ SELECT donor, SUM (amount)
+ FROM payment
+ GROUP BY donor
+ HAVING SUM (amount) > 200;
+
+8. Write queries to retrieve the following information.
+
+-- From the cats table, list all cats organized by intake date.
+SELECT name, intake_date FROM cats ORDER BY intake_date;
+
+-- Given an adoptions table with the columns id, date, adopter, cat, and fee, determine the 5 most recent adoptions to be featured as “Happy Tails” on social media.
+SELECT cat, date, adopter FROM cats ORDER BY date DESC LIMIT 5;
+
+-- There is a potential adopter looking for an adult female cat. In the most efficient way possible, from the Cats table, list all female cats 2 or more years old.
+SELECT cat, age FROM cats GROUP BY gender HAVING 'F' AND age >=2;
+
+-- From the donations table (described in problem #2), find the top 5 donors with the highest cumulative donation amounts to be honored as “Platinum Donors”.
+SELECT SUM(amount), donor FROM donations GROUP BY donor ORDER BY SUM(amount) DESC LIMIT 5;
+
+-- From the donations table (described in problem #2), find donors 6-15 with the next highest cumulative donation amounts to be honored as “Gold Donors”.
+SELECT SUM(amount), donor FROM donations GROUP BY donor ORDER BY SUM(amount) DESC LIMIT 10 OFFSET 5;

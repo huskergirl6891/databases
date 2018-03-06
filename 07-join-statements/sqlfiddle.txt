@@ -62,12 +62,16 @@ CREATE TABLE Patrons (id integer, name text, fine_amount integer);
 INSERT INTO Books (id, isbn, title, author)
 VALUES
 (1, 'a12', 'Harry Potter', 'J.K. Rowling'),
-(2, 'a23', 'Angels & Demons', 'Dan Brown');
+(2, 'a23', 'Angels & Demons', 'Dan Brown'),
+(3, 'a34', 'Test', 'Author');
 
 INSERT INTO Transactions(id, checked_out_date, checked_in_date, user_id, isbn)
 VALUES
 (1, '2018-01-01', '2018-02-01', 1, 'a12'),
-(2, '2018-03-01', '2018-04-01', 2, 'a12');
+(2, '2018-03-01', '2018-03-02', 2, 'a12'),
+(3, '2018-03-02', null, 3, 'a23'),
+(4, '2018-03-02', null, 3, 'a12'),
+(5, '2000-01-01', '2000-01-02', 1, 'a34');
 
 INSERT INTO Holds(id, isbn, user_id, rank, date)
 VALUES

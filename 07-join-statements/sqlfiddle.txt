@@ -1,0 +1,82 @@
+SELECT Dogs.name
+FROM Adoptions
+JOIN Dogs.id = Adoptions.dog;
+
+SELECT Adopters.first_name, Adopters.last_name
+    FROM Adoptions
+    JOIN Adopters.id = Adoptions.adopter;
+
+
+
+    SELECT Dogs.name, Adopters.first_name
+    FROM Adoptions
+    JOIN Dogs ON Dogs.id = Adoptions.dog;
+    JOIN Adopters ON Adopters.id = Adoptions.adopter;
+
+
+    CREATE TABLE Dogs (id integer, name text, gender text, age integer, weight integer, intake_date date, breed text, in_foster bool);
+    CREATE TABLE Cats (id integer, name text, gender text, age integer, intake_date date, adoption_date date);
+    CREATE TABLE Adoptions (id integer, adopter integer, cat integer, dog integer, fee integer, date date);
+    CREATE TABLE Adopters (id integer, first_name text, last_name text, address text, phone_number integer);
+    CREATE TABLE Volunteers (id integer, name text, address text, phone_number integer, available_to_foster bool, foster_id integer);
+
+    INSERT INTO Dogs (id, name, gender, age, weight, intake_date, breed, in_foster)
+    VALUES
+    (1, 'Spot', 'M', 2, 15, null, 'Beagle', true),
+    (2, 'Buzz', 'F', 1, 20, null, 'Golden Retriever', false),
+    (3, 'George', 'M', 3, 25, null, 'Pug', false),
+    (4, 'Peanut', 'M', 5, 10, null, 'Labrador', true);
+
+    INSERT INTO Cats (id, name, gender, age, intake_date, adoption_date)
+    VALUES
+    (1, 'Fluffy', 'M', 2, null, null),
+    (2, 'Bird', 'F', 1, null, null),
+    (3, 'Whitey', 'F', 3, null, null),
+    (4, 'Garfield', 'M', 5, null, null);
+
+    INSERT INTO Adopters (id, first_name, last_name, address, phone_number)
+    VALUES
+    (1, 'Bob', 'Smith', '12th St', 123),
+    (2, 'Jane', 'Doe', '3rd St', 345),
+    (3, 'Susan', 'Johnson', '33rd St', 345);
+
+    INSERT INTO Adoptions (id, adopter, cat, dog, fee, date)
+    VALUES
+    (1, 1, null, 1, 20, null);
+
+    INSERT INTO Volunteers (id, name, address, phone_number, available_to_foster, foster_id)
+    VALUES
+    (1, 'Sally', '12A', 243, true, 3),
+    (1, 'Molly', '12A', 243, true, null);
+
+
+RIGHT OUTER JOIN Adopters ON Adopters.id = Adoptions.adopter;
+
+
+
+CREATE TABLE Books (id integer, isbn text, title text, author text);
+CREATE TABLE Transactions (id integer, checked_out_date date, checked_in_date date, user_id integer, isbn text);
+CREATE TABLE Holds (id integer, isbn text, user_id integer, rank integer, date date);
+CREATE TABLE Patrons (id integer, name text, fine_amount integer);
+
+INSERT INTO Books (id, isbn, title, author)
+VALUES
+(1, 'a12', 'Harry Potter', 'J.K. Rowling'),
+(2, 'a23', 'Angels & Demons', 'Dan Brown');
+
+INSERT INTO Transactions(id, checked_out_date, checked_in_date, user_id, isbn)
+VALUES
+(1, '2018-01-01', '2018-02-01', 1, 'a12'),
+(2, '2018-03-01', '2018-04-01', 2, 'a12');
+
+INSERT INTO Holds(id, isbn, user_id, rank, date)
+VALUES
+(1, 'a12', 2, 1, null),
+(2, 'a12', 1, 2, null),
+(3, 'a23', 3, 1, null);
+
+INSERT INTO Patrons(id, name, fine_amount)
+VALUES
+(1, 'Bob', 25),
+(2, 'Jane', 30),
+(3, 'Sally', 0);

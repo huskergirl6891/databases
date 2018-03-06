@@ -45,12 +45,12 @@ list.  He could query the store inventory list and the best seller list, which w
 7.  Build an Employees table and a Shifts table with appropriate primary and foreign keys. Then, write queries to find the following information:
 CREATE TABLE employees (id integer, employee text, shift_id integer);
 CREATE TABLE shifts (id integer, day text);
-    -- List all employees and all shifts.
+-- List all employees and all shifts.
     SELECT employees.employee, shifts.day
     FROM employees
     FULL OUTER JOIN shifts
     ON employees.shift_id = shift.id
-    -- Create a list of all possible schedules.
+-- Create a list of all possible schedules.
     SELECT *
     FROM employees
     CROSS JOIN shifts
@@ -59,19 +59,19 @@ CREATE TABLE shifts (id integer, day text);
 the Adopters table (which has the columns id, first_name, last_name, address, and phone number),
 and the Volunteers table (which has the columns id, name, address, phone_number, available_to_foster, and foster_id),
 please write queries to retrieve the following information.
-    -- Create a list of all volunteers. If the volunteer is fostering a dog, include each dog as well.
+-- Create a list of all volunteers. If the volunteer is fostering a dog, include each dog as well.
     SELECT V.name, D.name
     FROM Volunteers AS V
     LEFT OUTER JOIN Dogs AS D
     ON V.foster_id = D.id;
 
-    -- List the adopter’s name and the pet’s name for each animal adopted within the past month to be displayed as a ‘Happy Tail’ on social media.
+-- List the adopter’s name and the pet’s name for each animal adopted within the past month to be displayed as a ‘Happy Tail’ on social media.
     SELECT Adopters.first_name, Dogs.name
     FROM Adoptions
     JOIN Adopters ON Adopters.id = Adoptions.adopter
     JOIN Dogs ON Dogs.id = Adoptions.dog;
 
-    *-- Create a list of adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
+*-- Create a list of adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
     SELECT Adopters.first_name
     FROM Adoptions
     RIGHT OUTER JOIN Adopters ON Adopters.id = Adoptions.adopter
@@ -81,7 +81,7 @@ please write queries to retrieve the following information.
     FROM Adopters
     CROSS JOIN Dogs
 
-    -- Display a list of all cats and all dogs who have not been adopted.
+-- Display a list of all cats and all dogs who have not been adopted.
     SELECT Dogs.name
     FROM Adoptions
     RIGHT OUTER JOIN Dogs ON Dogs.id = Adoptions.dog
@@ -92,18 +92,18 @@ please write queries to retrieve the following information.
     RIGHT OUTER JOIN Cats ON Cats.id = Adoptions.cat
     WHERE Adoptions.cat IS NULL
 
-    *-- Create a list of volunteers who are available to foster. If they currently are fostering a dog, include the dog. Also include all
-    dogs who are not currently in foster homes.
+*-- Create a list of volunteers who are available to foster. If they currently are fostering a dog, include the dog. Also include all
+dogs who are not currently in foster homes.
     SELECT Volunteers.name, Dogs.name
     FROM Volunteers
     FULL OUTER JOIN Dogs ON Dogs.id = Volunteers.foster_id;
 
 9.  Write a query to find the name of the person who adopted Seashell given the tables Cats (depicted below), Adoptions (depicted below),
 and Adopters which has columns for id, address, phone number, and name.
-    -- Dogs table has the columns id, name, gender, age, weight, intake_date, breed, and in_foster.
-    NOTE: Shelter dogs’ breeds are typically guessed by the intake team, so the column may have multiple words. I.E. labrador collie mix
-    -- Cats table has the columns id, name, gender, age, intake_date, adoption_date
-    -- Adoptions table has the columns id, adopter, cat, dog, fee, date
+-- Dogs table has the columns id, name, gender, age, weight, intake_date, breed, and in_foster.
+NOTE: Shelter dogs’ breeds are typically guessed by the intake team, so the column may have multiple words. I.E. labrador collie mix
+-- Cats table has the columns id, name, gender, age, intake_date, adoption_date
+-- Adoptions table has the columns id, adopter, cat, dog, fee, date
     SELECT Adopters.first_name, Cats.name
     FROM Adoptions
     JOIN Adopters ON Adopters.id = Adoptions.adopter
@@ -112,25 +112,28 @@ and Adopters which has columns for id, address, phone number, and name.
 
 10.  Given the tables Books (isbn, title, author), Transactions(id, checked_out_date, checked_in_date, user_id, isbn),
 Holds(id, isbn, user_id, rank, date), and Patrons(id, name, fine_amount), write queries to find the following information:
-    -- To discern if the library should buy more copies of a given book, please provide the names and position, in order, of all
-    of the patrons waiting in line for Harry Potter and the Sorcerer’s Stone.
+-- To discern if the library should buy more copies of a given book, please provide the names and position, in order, of all
+of the patrons waiting in line for Harry Potter and the Sorcerer’s Stone.
     SELECT Patrons.name, Holds.rank
     FROM Holds
     JOIN Patrons ON Patrons.id = Holds.user_id
     WHERE Holds.isbn = 'a12'
     ORDER BY Holds.rank;
 
-    -- Make a list of all book titles and denote whether or not a copy of that book is checked out.
+-- Make a list of all book titles and denote whether or not a copy of that book is checked out.
     SELECT Books.title, Transactions.checked_out_date
     FROM Transactions
     RIGHT OUTER JOIN Books ON Books.isbn = Transactions.isbn;
 
-    -- In an effort to learn which books take longer to read, the librarians would like you to create a list of
-    total checked out time by book name in the past month.
+-- In an effort to learn which books take longer to read, the librarians would like you to create a list of
+total checked out time by book name in the past month.
 
 
-    -- In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
+-- In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
 
 
-    -- List all of the library patrons. If they have one or more books checked out, correspond the books to the patrons.
-    
+*-- List all of the library patrons. If they have one or more books checked out, correspond the books to the patrons.
+    SELECT Patrons.name, Books.title
+    FROM Transactions
+    RIGHT JOIN Patrons ON Patrons.id = Transactions.id
+    LEFT JOIN Books ON Books.isbn = Transactions.isbn;

@@ -66,12 +66,19 @@ please write queries to retrieve the following information.
     ON V.foster_id = D.id;
 
 -- List the adopter’s name and the pet’s name for each animal adopted within the past month to be displayed as a ‘Happy Tail’ on social media.
-    SELECT Adopters.first_name, Dogs.name
-    FROM Adoptions
-    JOIN Adopters ON Adopters.id = Adoptions.adopter
-    JOIN Dogs ON Dogs.id = Adoptions.dog;
+SELECT Adopters.first_name, Dogs.name
+FROM Adoptions
+JOIN Adopters ON Adopters.id = Adoptions.adopter
+JOIN Dogs ON Dogs.id = Adoptions.dog
+WHERE Adoptions.date > current_date - 30
+UNION
+SELECT Adopters.first_name, Cats.name
+FROM Adoptions
+JOIN Adopters ON Adopters.id = Adoptions.adopter
+JOIN Cats ON Cats.id = Adoptions.cat
+WHERE Adoptions.date > current_date - 30
 
-*-- Create a list of adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
+-- Create a list of adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
     SELECT Adopters.first_name
     FROM Adoptions
     RIGHT OUTER JOIN Adopters ON Adopters.id = Adoptions.adopter
@@ -86,13 +93,13 @@ please write queries to retrieve the following information.
     FROM Adoptions
     RIGHT OUTER JOIN Dogs ON Dogs.id = Adoptions.dog
     WHERE Adoptions.dog IS NULL
-
+    UNION
     SELECT Cats.name
     FROM Adoptions
     RIGHT OUTER JOIN Cats ON Cats.id = Adoptions.cat
     WHERE Adoptions.cat IS NULL
 
-*-- Create a list of volunteers who are available to foster. If they currently are fostering a dog, include the dog. Also include all
+-- Create a list of volunteers who are available to foster. If they currently are fostering a dog, include the dog. Also include all
 dogs who are not currently in foster homes.
     SELECT Volunteers.name, Dogs.name
     FROM Volunteers
@@ -120,21 +127,22 @@ of the patrons waiting in line for Harry Potter and the Sorcerer’s Stone.
     WHERE Holds.isbn = 'a12'
     ORDER BY Holds.rank;
 
--- Make a list of all book titles and denote whether or not a copy of that book is checked out.
+*-- Make a list of all book titles and denote whether or not a copy of that book is checked out.
     SELECT Books.title, Transactions.checked_out_date
     FROM Transactions
     RIGHT OUTER JOIN Books ON Books.isbn = Transactions.isbn;
 
--- In an effort to learn which books take longer to read, the librarians would like you to create a list of
+*-- In an effort to learn which books take longer to read, the librarians would like you to create a list of
 total checked out time by book name in the past month.
     SELECT Transactions.checked_in_date - Transactions.checked_out_date AS time, Books.title
     FROM Transactions
     JOIN Books ON Books.isbn = Transactions.isbn
 
--- In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
-    SELECT Books.title
-    FROM Books, Transactions
-    WHERE Transactions.checked_out_date < '2013-01-01';
+*-- In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
+SELECT Books.title
+FROM Transactions
+JOIN Books ON Books.isbn = Transactions.isbn
+WHERE Transactions.checked_out_date < current_date - 1825;
 
 *-- List all of the library patrons. If they have one or more books checked out, correspond the books to the patrons.
     SELECT Patrons.name, Books.title

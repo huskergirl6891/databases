@@ -134,9 +134,15 @@ RIGHT OUTER JOIN Books ON Books.isbn = Transactions.isbn;
 
 *-- In an effort to learn which books take longer to read, the librarians would like you to create a list of
 total checked out time by book name in the past month.
-SELECT Transactions.checked_in_date - Transactions.checked_out_date AS time, Books.title
+SELECT Books.title, (Transactions.checked_in_date - Transactions.checked_out_date) AS time
 FROM Transactions
 JOIN Books ON Books.isbn = Transactions.isbn
+WHERE Transactions.checked_in_date IS NOT NULL
+UNION
+SELECT Books.title, (current_date - Transactions.checked_out_date) AS time
+FROM Transactions
+JOIN Books ON Books.isbn = Transactions.isbn
+WHERE Transactions.checked_in_date IS NULL
 
 -- In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
 SELECT Books.title

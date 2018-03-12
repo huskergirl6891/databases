@@ -1,0 +1,67 @@
+1. In your own words, explain the benefits of normalization. Include a real-world
+scenario where normalization is necessary.
+Normalization improves the quality of data because it eliminates or reduces the amount
+of duplicate data stored in multiple tables.  This will reduce the chance of errors when
+data is updated.  This also helps speed up writing/updating data.  An example of
+when normalization is necessary is in applications with high write/update volume, such
+as companies like Amazon that would have a high volume of repeated work flows involving
+data updates such as adding a new user or a customer completing an order.
+
+2. List and explain the different normal forms and how they relate to one another,
+with regard to your real-world scenario in the first question.
+Example:  Amazon users and orders tables
+1NF - A column in a table can only contain one value, not multiple
+Ex: The user table would only allow one entry in each column:  id, name, address, email, phone
+2NF - A column cannot be dependent on a subset of other columns
+Ex: The orders table initially contained the order id, order date, user id, user name, user email
+but must be split into two tables - the order table (with order id, order date and user id) and
+a user table (with user id, user name, user email).
+3NF - No transitive dependencies can exist.
+Ex: The orders table includes order id, order date, item id, item cost, item size.  Item cost
+and item size are related to item id only, so need to be split into a separate table.
+BCNF - Every dependency must be a super key of the main table.
+Ex:  There are 3 tables:  orders (user_id, item_id), users (user_id, name, email), and
+items (item_id, cost, size).  User_id and item_id are super keys of the other two tables.
+
+3. This student_records table contains students and their grades in different subjects.
+The schema is already in first normal form (1NF). Convert this schema to the third normal
+form (3NF) using the techniques you learned in this checkpoint.
+CREATE TABLE student_records (
+  "entry_id"        INTEGER,
+  "student_id"      INTEGER,
+  "professor_id"    INTEGER,
+  "grade"           VARCHAR(1)
+);
+
+CREATE TABLE student (
+  "student_id"      INTEGER,
+  "student_email"   VARCHAR(24),
+  "student_name"    VARCHAR(9)
+)
+
+CREATE TABLE professor (
+  "professor_id"    INTEGER,
+  "professor_name"  VARCHAR(9),
+  "subject"         VARCHAR(11)
+)
+
+4. In your own words, explain the potential disadvantages of normalizing the data above.
+What are its trade-offs? Submit your findings in the submission table and discuss them
+with your mentor in your next session.
+Potential disadvantages include a loss of read performance since data is spread out in
+multiple tables.  It becomes harder to perform one-off queries as well.  Also, it requires
+a deep understand of the relationships between data sets, which can take time to develop.
+
+5. Looking at the tables you have normalized. If you need to denormalize to improve query
+performance or speed up reporting, how would you carry out denormalization for this database
+design? Submit potential strategies in the submission tab and discuss them with your mentor
+in your next session.
+Possible strategies could include combining tables, especially if one or both tables are fairly small
+or if frequent queries are needed for a logical combination of data.  Another option might
+be to create a table specifically for data that is read on a frequent basis.
+
+6. Explore the trade-offs between data normalization and denormalization in this scenario,
+submit your findings in the submission tab, and discuss them with your mentor in your next session.
+There would be performance trade-offs - i.e. a more normalized database would have slower performance
+but high quality of data.  Denormalization would improve/speed-up performance but may result
+in data errors.

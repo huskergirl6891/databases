@@ -1,0 +1,189 @@
+1. Explain a subquery in your own words.
+A subquery is basically a query inside of a query.  It can be used in different ways to
+query a subset of data.
+
+2. Where can you use a subquery within a SELECT statement?
+It can be used in the SELECT, FROM, or WHERE clauses.
+
+3. When would you employ a subquery?
+A subquery is typically used when data from two or more tables needs to joined and requires
+some sort of filter or conditional.
+
+4. Explain a row constructor in your own words.
+A row constructor creates a row using specified values for each column in the table.
+
+5. What happens if a row in the subquery result provides a NULL value to the comparison?
+The result of the comparison is NULL.
+
+6. What are the ways to use a subquery within a WHERE clause? If you can't remember them, do these flashcards until you can.
+Several ways:  IN, NOT IN, ANY/SOME, ALL, EXISTS, NOT EXISTS
+
+7. Using this Employee schema and data, write queries to find the following information:
+- All employees with their shifts if they have any. Also include any unscheduled shifts.
+SELECT employees.id, s.date, s.start_time, s.end_time
+FROM
+  (SELECT scheduled_shifts.employee_id, shifts.date, shifts.start_time, shifts.end_time
+  FROM shifts
+  LEFT OUTER JOIN scheduled_shifts ON scheduled_shifts.shift_id = shifts.id) AS s
+FULL JOIN employees ON employees.id = s.employee_id;
+
+8. Using this Adoption schema and data, please write queries to retrieve the following information and include the results:
+- All volunteers. If the volunteer is fostering a dog, include each dog as well.
+SELECT volunteers.first_name, volunteers.last_name, volunteers.foster_dog_id, d.name
+FROM
+  (SELECT id, name
+  FROM dogs) AS d
+RIGHT JOIN volunteers ON volunteers.foster_dog_id = d.id;
+
+first_name	 last_name	 foster_dog_id	name
+Rubeus	     Hagrid	     10002	        Munchkin
+Marjorie	   Dursley	   10006	        Marmaduke
+Sirius	     Black	     (null)	        (null)
+Remus	       Lupin	     (null)	        (null)
+Albus	       Dumbledore	 (null)	        (null)
+
+- The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of
+the "Happy Tail" social media promotion which posts recent successful adoptions.
+SELECT adopters.first_name, c.name, c.date
+FROM
+  (SELECT cats.name, cat_adoptions.adopter_id, cat_adoptions.cat_id, cat_adoptions.date
+  FROM cat_adoptions
+  JOIN cats ON cats.id = cat_adoptions.cat_id) AS c
+JOIN adopters ON adopters.id = c.adopter_id
+WHERE c.date > current_date - 30;
+
+first_name	name	    date
+Arabella	  Mushi	    2018-03-09
+Argus	      Victoire	2018-03-14
+
+- Adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
+SELECT a.first_name, b.name
+FROM
+  (SELECT first_name
+  FROM adopters
+  WHERE id NOT IN
+    (SELECT adopter_id
+     FROM dog_adoptions
+     WHERE adopters.id = dog_adoptions.adopter_id)) AS a
+CROSS JOIN
+  (SELECT name
+   FROM dogs
+   WHERE id NOT IN
+     (SELECT dog_id
+      FROM dog_adoptions
+      WHERE dogs.id = dog_adoptions.dog_id))AS b
+
+      first_name	name
+      Hermione	Boujee
+      Arabella	Boujee
+      Hermione	Munchkin
+      Arabella	Munchkin
+      Hermione	Marley
+      Arabella	Marley
+      Hermione	Lassie
+      Arabella	Lassie
+      Hermione	Marmaduke
+      Arabella	Marmaduke
+
+- Lists of all cats and all dogs who have not been adopted.
+SELECT name
+FROM cats
+WHERE id NOT IN
+  (SELECT cat_id
+   FROM cat_adoptions
+   WHERE cats.id = cat_adoptions.cat_id)
+UNION
+SELECT name
+FROM dogs
+WHERE id NOT IN
+  (SELECT dog_id
+   FROM dog_adoptions
+   WHERE dogs.id = dog_adoptions.dog_id)
+
+   name
+   Munchkin
+   Nala
+   Marley
+   Marmaduke
+   Seashell
+   Boujee
+   Lassie
+
+
+- Volunteers who are available to foster. If they currently are fostering a dog, include the dog. Also include all dogs who
+are not currently in foster homes.
+SELECT volunteers.first_name, volunteers.last_name, volunteers.foster_dog_id, d.name
+FROM
+  (SELECT id, name
+  FROM dogs) AS d
+FULL OUTER JOIN volunteers ON volunteers.foster_dog_id = d.id;
+
+first_name	last_name	foster_dog_id	name
+(null)	(null)	(null)	Boujee
+Rubeus	Hagrid	10002	Munchkin
+(null)	(null)	(null)	Marley
+(null)	(null)	(null)	Lassie
+Marjorie	Dursley	10006	Marmaduke
+(null)	(null)	(null)	Rosco
+Sirius	Black	(null)	(null)
+Remus	Lupin	(null)	(null)
+Albus	Dumbledore	(null)	(null)
+
+- The name of the person who adopted Rosco.
+SELECT first_name, last_name
+FROM adopters
+WHERE id IN
+  (SELECT adopter_id
+   FROM dog_adoptions
+   WHERE dog_id = 10007)
+
+   first_name	last_name
+   Argus	Filch
+
+9. Using this Library schema and data, write queries applying the following scenarios:
+- To determine if the library should buy more copies of a given book, please provide the names and position, in order, of all
+of the patrons with a hold (request for a book with all copies checked out) on "Advanced Potion-Making".
+SELECT patrons.name, holds.rank
+FROM holds
+JOIN patrons ON patrons.id = holds.patron_id
+WHERE isbn IN
+  (SELECT isbn
+   FROM books
+   WHERE title = 'Advanced Potion-Making')
+ORDER BY holds.rank
+
+name	rank
+Terry Boot	1
+Cedric Diggory	2
+
+***- Make a list of all book titles and denote whether or not a copy of that book is checked out.
+SELECT Books.title, t.checked_out_date, t.checked_in_date
+FROM
+  (SELECT
+RIGHT OUTER JOIN Books ON Books.isbn = Transactions.isbn
+
+SELECT isbn, checked_in_date
+FROM transactions
+WHERE checked_in_date IS NULL
+
+
+SELECT isbn, MAX(checked_out_date) AS recent_checkout_date, checked_in_date
+FROM transactions
+GROUP BY isbn
+
+- In an effort to learn which books take longer to read, the librarians would like you to create a list of total checked out
+time by book name in the past month.
+
+- In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
+
+- List all of the library patrons. If they have one or more books checked out, correspond the books to the patrons.
+
+
+10. Using this Flight schema and data, write queries applying the following scenarios:
+- To determine the most profitable airplanes, find all airplane models where each flight has had over 250 paying customers in the past month.
+- To determine the most profitable flights, find all destination-origin pairs where 90% or more of the seats have been sold in the past month.
+- The airline is looking to expand its presence in Asia and globally. Find the total revenue of any flight (not time restricted)
+arriving at or departing from Singapore (SIN).
+
+11. Compare the subqueries you've written above. Compare them to the joins you wrote in Checkpoint 6. Which ones are more readable?
+Which were more logical to write?

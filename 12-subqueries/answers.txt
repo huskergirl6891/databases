@@ -156,23 +156,33 @@ name	rank
 Terry Boot	1
 Cedric Diggory	2
 
-***- Make a list of all book titles and denote whether or not a copy of that book is checked out.
-SELECT Books.title, t.checked_out_date, t.checked_in_date
+- Make a list of all book titles and denote whether or not a copy of that book is checked out.
+SELECT Books.title, 'Checked Out' as is_checked_out
 FROM
-  (SELECT
-RIGHT OUTER JOIN Books ON Books.isbn = Transactions.isbn
+  (SELECT isbn
+  FROM transactions
+  WHERE checked_in_date IS NULL) AS t
+JOIN Books ON Books.isbn = t.isbn
+UNION
+SELECT Books.title, 'Not Checked Out' as is_checked_out
+FROM
+  (SELECT isbn
+   FROM transactions
+   WHERE isbn NOT IN
+    (SELECT isbn
+    FROM transactions
+    WHERE checked_in_date IS NULL)) as p
+JOIN Books ON Books.isbn = p.isbn
 
-SELECT isbn, checked_in_date
-FROM transactions
-WHERE checked_in_date IS NULL
-
-
-SELECT isbn, MAX(checked_out_date) AS recent_checkout_date, checked_in_date
-FROM transactions
-GROUP BY isbn
+title	                                    is_checked_out
+Hogwarts: A History	Not                   Checked Out
+Fantastic Beasts and Where to Find Them	  Checked Out
+Advanced Potion-Making	                  Checked Out
 
 - In an effort to learn which books take longer to read, the librarians would like you to create a list of total checked out
 time by book name in the past month.
+
+
 
 - In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
 

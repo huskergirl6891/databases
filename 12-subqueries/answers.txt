@@ -181,19 +181,115 @@ Advanced Potion-Making	                  Checked Out
 
 - In an effort to learn which books take longer to read, the librarians would like you to create a list of total checked out
 time by book name in the past month.
+SELECT c.title, SUM(c.time)
+FROM
+(SELECT books.title, (t.checked_in_date - t.checked_out_date) AS time
+FROM
+  (SELECT isbn, checked_in_date, checked_out_date
+  FROM transactions
+  WHERE checked_in_date IS NOT NULL) AS t
+JOIN books ON books.isbn = t.isbn
+UNION
+SELECT books.title, (current_date - r.checked_out_date) AS time
+FROM
+  (SELECT isbn, checked_in_date, checked_out_date
+  FROM transactions
+  WHERE checked_in_date IS NULL) AS r
+JOIN books ON books.isbn = r.isbn) AS c
+GROUP BY c.title
 
-
+title	                                    sum
+Fantastic Beasts and Where to Find Them	  6
+Advanced Potion-Making	                  4
+Hogwarts: A History	                      1
 
 - In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
+SELECT title
+FROM books
+WHERE isbn IN
+  (SELECT isbn
+   FROM transactions
+   WHERE checked_out_date < current_date - 1825 OR checked_out_date IS NULL)
+
+   title
+   Hogwarts: A History
+   Fantastic Beasts and Where to Find Them
+   Advanced Potion-Making
 
 - List all of the library patrons. If they have one or more books checked out, correspond the books to the patrons.
+SELECT patrons.name, c.title
+FROM
+(SELECT b.patron_id AS id, books.title AS title
+FROM
+  (SELECT isbn, patron_id
+  FROM transactions
+  WHERE checked_in_date IS NULL) AS b
+JOIN books ON books.isbn = b.isbn
+UNION
+SELECT id AS id, 'No book checked out' AS title
+FROM patrons
+WHERE id NOT IN
+  (SELECT patron_id
+   FROM transactions
+   WHERE checked_in_date IS NULL)) AS c
+JOIN patrons ON patrons.id = c.id
+
+name	             title
+Padma Patil	       No book checked out
+Terry Boot	       Advanced Potion-Making
+Hermione Granger	 No book checked out
+Cho Chang	         No book checked out
+Cedric Diggory	   Fantastic Beasts and Where to Find Them
 
 
 10. Using this Flight schema and data, write queries applying the following scenarios:
 - To determine the most profitable airplanes, find all airplane models where each flight has had over 250 paying customers in the past month.
+SELECT flights.airplane_model
+FROM
+  (SELECT seats_sold, flight_number
+  FROM transactions
+  WHERE date > current_date - 30 AND seats_sold >250) AS f
+JOIN flights ON flights.flight_number = f.flight_number
+
+airplane_model
+Boeing 787
+Airbus A330
+Boeing 777
+Airbus A380
+
 - To determine the most profitable flights, find all destination-origin pairs where 90% or more of the seats have been sold in the past month.
+SELECT c.sold AS sold, c.flight_number
+FROM
+(SELECT (f.seats_sold * 100 /airplanes.seat_capacity) AS sold, f.flight_number, flights.airplane_model
+FROM
+  (SELECT seats_sold, flight_number
+  FROM transactions
+  WHERE date > current_date - 30) AS f
+JOIN flights ON flights.flight_number = f.flight_number
+JOIN airplanes ON airplanes.model = flights.airplane_model) as c
+WHERE c.sold >= 90
+
+sold	flight_number
+100	  137
+95	  8932
+90	  57
+
 - The airline is looking to expand its presence in Asia and globally. Find the total revenue of any flight (not time restricted)
 arriving at or departing from Singapore (SIN).
 
+SELECT total_revenue, flight_number
+FROM transactions
+WHERE flight_number IN
+  (SELECT flight_number
+   FROM flights
+   WHERE origin = 'SIN' OR destination = 'SIN')
+
+   total_revenue	flight_number
+   250394.7	      7352
+   131992.12	    7403 
+
 11. Compare the subqueries you've written above. Compare them to the joins you wrote in Checkpoint 6. Which ones are more readable?
 Which were more logical to write?
+
+I think the subqueries are more readable since it is clearer what tables are being put together.  Joins require remembering what all
+the different types of joins mean.  However, joins for me are more logical to write especially when putting two tables together.
